@@ -4,22 +4,20 @@ import de.cintox.hoshire.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
 
 public class saveC {
 
-    static File file = new File(Main.plugin.getDataFolder(), "coins.yml");
-    static YamlConfiguration cfg;
+    static YamlConfiguration cfg = YamlConfiguration.loadConfiguration(Main.plugin.fileHC);
 
     private static void fillCfg(UUID pUUID) {
 
-        cfg = YamlConfiguration.loadConfiguration(file);
-        cfg.set(pUUID + ".name", Bukkit.getPlayer(pUUID).getName());
+        cfg.set(pUUID + ".name", Objects.requireNonNull(Bukkit.getPlayer(pUUID)).getName());
 
         try {
-            cfg.save(file);
+            cfg.save(Main.plugin.fileHC);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -28,51 +26,32 @@ public class saveC {
 
     public static int getCoins(UUID pUUID) {
 
-        YamlConfiguration cfg;
+        if (!(Objects.requireNonNull(Bukkit.getPlayer(pUUID)).getName().equals(cfg.get(pUUID + ".name")))) {
+            cfg.set(pUUID + ".name", Objects.requireNonNull(Bukkit.getPlayer(pUUID)).getName());
 
-        if (!file.exists()) {
             try {
-                file.createNewFile();
-                fillCfg(pUUID);
+                cfg.save(Main.plugin.fileHC);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            return 0;
-
-
-        } else {
-            cfg = YamlConfiguration.loadConfiguration(file);
-
-            if (!(Bukkit.getPlayer(pUUID).getName().equals(cfg.get(pUUID + ".name")))) {
-                cfg.set(pUUID + ".name", Bukkit.getPlayer(pUUID).getName());
-            }
-
-            return cfg.getInt(String.valueOf(pUUID) + ".coins");
         }
+
+        return cfg.getInt(pUUID + ".coins");
     }
+
 
     public static boolean setCoins(UUID pUUID, int pCoins) {
 
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-                fillCfg(pUUID);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        fillCfg(pUUID);
+        cfg.set(pUUID + ".coins", pCoins);
 
-        cfg = YamlConfiguration.loadConfiguration(file);
-
-        cfg.set(String.valueOf(pUUID) + ".coins", pCoins);
-
-        if (!(Bukkit.getPlayer(pUUID).getName().equals(cfg.get(pUUID + ".name")))) {
-            cfg.set(pUUID + ".name", Bukkit.getPlayer(pUUID).getName());
+        if (!(Objects.requireNonNull(Bukkit.getPlayer(pUUID)).getName().equals(cfg.get(pUUID + ".name")))) {
+            cfg.set(pUUID + ".name", Objects.requireNonNull(Bukkit.getPlayer(pUUID)).getName());
         }
 
         try {
-            cfg.save(file);
+            cfg.save(Main.plugin.fileHC);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -82,24 +61,17 @@ public class saveC {
 
     public static boolean addCoins(UUID pUUID, int pCoins) {
 
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-                fillCfg(pUUID);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        fillCfg(pUUID);
 
         int oldcoins = getCoins(pUUID);
-        cfg.set(String.valueOf(pUUID) + ".coins", oldcoins + pCoins);
+        cfg.set(pUUID + ".coins", oldcoins + pCoins);
 
-        if (!(Bukkit.getPlayer(pUUID).getName().equals(cfg.get(pUUID + ".name")))) {
-            cfg.set(pUUID + ".name", Bukkit.getPlayer(pUUID).getName());
+        if (!(Objects.requireNonNull(Bukkit.getPlayer(pUUID)).getName().equals(cfg.get(pUUID + ".name")))) {
+            cfg.set(pUUID + ".name", Objects.requireNonNull(Bukkit.getPlayer(pUUID)).getName());
         }
 
         try {
-            cfg.save(file);
+            cfg.save(Main.plugin.fileHC);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -110,26 +82,21 @@ public class saveC {
 
     public static boolean removeCoins(UUID pUUID, int pCoins) {
 
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-                fillCfg(pUUID);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return false;
-        }
+        fillCfg(pUUID);
 
         int oldcoins = getCoins(pUUID);
 
-        cfg.set(String.valueOf(pUUID) + ".coins", oldcoins - pCoins);
+        if((oldcoins - pCoins) < 0) {
+            return false;
+        }
+        cfg.set(pUUID + ".coins", oldcoins - pCoins);
 
-        if (!(Bukkit.getPlayer(pUUID).getName().equals(cfg.get(pUUID + ".name")))) {
-            cfg.set(pUUID + ".name", Bukkit.getPlayer(pUUID).getName());
+        if (!(Objects.requireNonNull(Bukkit.getPlayer(pUUID)).getName().equals(cfg.get(pUUID + ".name")))) {
+            cfg.set(pUUID + ".name", Objects.requireNonNull(Bukkit.getPlayer(pUUID)).getName());
         }
 
         try {
-            cfg.save(file);
+            cfg.save(Main.plugin.fileHC);
         } catch (IOException e) {
             e.printStackTrace();
         }

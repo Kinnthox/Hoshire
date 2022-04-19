@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class coins implements CommandExecutor {
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
@@ -29,16 +30,10 @@ public class coins implements CommandExecutor {
                         else p.sendMessage(strings.help);
 
                     } else {
-                        p.sendMessage(strings.syntaxError);
-                    }
-
-                    // /coins get <Player>
-                } else if (args.length == 2) {
-                    if (p.isOp()) {
-                        if (args[0].equalsIgnoreCase("get")) {
-                            Player target = Bukkit.getPlayer(args[1]);
-                            if (target != null) {
-                                p.sendMessage(Main.plugin.prefix + "§7Spieler §f" + args[1]
+                        if(p.isOp()) {
+                            Player target = Bukkit.getPlayer(args[0]);
+                            if(target != null) {
+                                p.sendMessage(Main.plugin.prefix + "§7Spieler §f" + args[0]
                                         + " §7besitzt §f" + saveC.getCoins(target.getUniqueId()) + " §6Hoshcoins§7.");
                             } else {
                                 p.sendMessage(strings.Error);
@@ -46,14 +41,14 @@ public class coins implements CommandExecutor {
                         } else {
                             p.sendMessage(strings.syntaxError);
                         }
-                    } else {
-                        p.sendMessage(strings.syntaxError);
                     }
 
+                    // /coins get <Player>
+                }
                     // /coins set Kinnthox 100
                     // /coins add Kinnthox 100
                     // /coins remove Kinnthox 100
-                } else if (args.length == 3) {
+                 else if (args.length == 3) {
                     if (p.isOp()) {
 
                         Player target = Bukkit.getPlayer(args[1]);
