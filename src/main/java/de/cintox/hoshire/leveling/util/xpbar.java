@@ -30,8 +30,7 @@ public class xpbar {
             if(xps.get(p) != null) {
                 ResetBar(p);
             } else {
-                Main.plugin.getServer().getConsoleSender().sendMessage(Main.plugin.prefix + ChatColor.RED + "Konnte Level nicht wiederherstellen, da Spieler den Server verlassen hat."
-                        + " Sobald er den Server erneut betritt, werden seine XP wiederhergestellt!");
+                Main.plugin.getServer().getConsoleSender().sendMessage(strings.LevelQuit);
             }
         }, 10*20);
     }

@@ -2,6 +2,7 @@ package de.cintox.hoshire.playtimes.TimeManager;
 
 import de.cintox.hoshire.Main;
 import de.cintox.hoshire.playtimes.TLManager.ScoreBoard;
+import de.cintox.hoshire.util.strings;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -77,11 +78,11 @@ public class TimeManager {
         }
 
         if(nhours == 1) {
-            p.sendMessage(Main.plugin.prefix + "§7 Die Spielzeit von §f" + target.getName()
-                    + " §7wurde auf §feine Stunde §7gesetzt.");
+            p.sendMessage(strings.setPT.replace("%NAME%", target.getName()));
         } else {
-            p.sendMessage(Main.plugin.prefix + "§7 Die Spielzeit von §f" + target.getName()
-                    + " §7wurde auf §f" + nhours + " Stunden §7gesetzt.");
+            String text = strings.setPT1.replace("%NAME%", target.getName());
+            String text1 = text.replace("%HOURS%", "" + nhours);
+            p.sendMessage(text1);
         }
 
         ScoreBoard.update(target);

@@ -10,6 +10,7 @@ import de.cintox.hoshire.leveling.util.levelManager;
 import de.cintox.hoshire.playtimes.TLManager.ScoreBoard;
 import de.cintox.hoshire.playtimes.TimeManager.TimeManager;
 import de.cintox.hoshire.playtimes.cmds.pt;
+import de.cintox.hoshire.util.strings;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,7 +21,6 @@ import java.util.HashMap;
 
 public final class Main extends JavaPlugin {
 
-    public final String prefix = ChatColor.DARK_GRAY + "[" + ChatColor.BLUE + "Hoshire" + ChatColor.DARK_GRAY + "] ";
     public HashMap<Player, levelManager> xps = new HashMap<>();
     public static Main plugin;
     public boolean debug = false;
@@ -31,7 +31,7 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        getServer().getConsoleSender().sendMessage(prefix + ChatColor.GRAY + "Das Plugin wurde " +
+        getServer().getConsoleSender().sendMessage(strings.prefix + ChatColor.GRAY + "Das Plugin wurde " +
                 ChatColor.GREEN + "geladen" + ChatColor.GRAY + ".");
         plugin = this;
         TimeManager.startTimer();
@@ -49,7 +49,7 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        getServer().getConsoleSender().sendMessage(prefix + ChatColor.GRAY + "Das Plugin wurde " +
+        getServer().getConsoleSender().sendMessage(strings.prefix + ChatColor.GRAY + "Das Plugin wurde " +
                 ChatColor.RED + "beendet" + ChatColor.GRAY + ".");
     }
 

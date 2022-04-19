@@ -21,8 +21,7 @@ public class coins implements CommandExecutor {
 
                 // /coins
                 if (args.length == 0) {
-                    p.sendMessage(Main.plugin.prefix + "§7Du hast aktuell §f" + saveC.getCoins(p.getUniqueId()) + " §6Hoshcoins§7.");
-
+                    p.sendMessage(strings.curHC.replace("%COINS%", "" + saveC.getCoins(p.getUniqueId())));
                     // /coins help
                 } else if (args.length == 1) {
                     if (args[0].equalsIgnoreCase("help")) {
@@ -30,11 +29,12 @@ public class coins implements CommandExecutor {
                         else p.sendMessage(strings.help);
 
                     } else {
-                        if(p.isOp()) {
+                        if (p.isOp()) {
                             Player target = Bukkit.getPlayer(args[0]);
-                            if(target != null) {
-                                p.sendMessage(Main.plugin.prefix + "§7Spieler §f" + args[0]
-                                        + " §7besitzt §f" + saveC.getCoins(target.getUniqueId()) + " §6Hoshcoins§7.");
+                            if (target != null) {
+                                String text = strings.curHCOther.replace("%NAME%", args[0]);
+                                String text1 = text.replace("%COINS%","" + saveC.getCoins(target.getUniqueId()));
+                                p.sendMessage(text1);
                             } else {
                                 p.sendMessage(strings.Error);
                             }
@@ -45,10 +45,10 @@ public class coins implements CommandExecutor {
 
                     // /coins get <Player>
                 }
-                    // /coins set Kinnthox 100
-                    // /coins add Kinnthox 100
-                    // /coins remove Kinnthox 100
-                 else if (args.length == 3) {
+                // /coins set Kinnthox 100
+                // /coins add Kinnthox 100
+                // /coins remove Kinnthox 100
+                else if (args.length == 3) {
                     if (p.isOp()) {
 
                         Player target = Bukkit.getPlayer(args[1]);
@@ -63,8 +63,9 @@ public class coins implements CommandExecutor {
                         if (args[0].equalsIgnoreCase("set")) {
 
                             if (saveC.setCoins(target.getUniqueId(), coins)) {
-                                p.sendMessage(Main.plugin.prefix + "§7Die §6Hoshcoins §7von §f" + target.getName()
-                                        + "§7 wurden auf §f" + coins + " §6Hoshcoins §7gesetzt.");
+                                String text = strings.setHC.replace("%NAME%", target.getName());
+                                String text1 = text.replace("%COINS%", "" + coins);
+                                p.sendMessage(text1);
                             } else {
                                 p.sendMessage(strings.Error);
                             }
@@ -73,8 +74,9 @@ public class coins implements CommandExecutor {
                         } else if (args[0].equalsIgnoreCase("add")) {
 
                             if (saveC.addCoins(target.getUniqueId(), coins)) {
-                                p.sendMessage(Main.plugin.prefix + "§7Dem Konto von §f" + target.getName()
-                                        + "§7 wurden §f" + coins + " §6Hoshcoins §7gutgeschrieben.");
+                                String text = strings.addHC.replace("%NAME%", target.getName());
+                                String text1 = text.replace("%COINS%", "" + coins);
+                                p.sendMessage(text1);
                             } else {
                                 p.sendMessage(strings.Error);
                             }
@@ -84,8 +86,9 @@ public class coins implements CommandExecutor {
 
                             if (coins <= saveC.getCoins(target.getUniqueId())) {
                                 if (saveC.removeCoins(target.getUniqueId(), coins)) {
-                                    p.sendMessage(Main.plugin.prefix + "§7Vom Konto von §f" + target.getName()
-                                            + "§7 wurden §f" + coins + " §6Hoshcoins §7entfernt.");
+                                    String text = strings.removeHC.replace("%NAME%", target.getName());
+                                    String text1 = text.replace("%COINS%", "" + coins);
+                                    p.sendMessage(text1);
                                 } else {
                                     p.sendMessage(strings.Error);
                                 }
