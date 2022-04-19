@@ -1,0 +1,12 @@
+name: Hoshire
+version: '${project.version}'
+main: de.cintox.hoshire.Main
+api-version: 1.18
+authors: [ Kinnthox ]
+commands:
+  playtime:
+    description: Gibt die Spielstunden zurück.
+  coins:
+    description: Gibt die Hoshcoins zurück.
+  way:
+    description: Zeigt deine Level an.
