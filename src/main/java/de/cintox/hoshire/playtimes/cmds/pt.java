@@ -7,11 +7,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+
+import java.io.IOException;
 
 public class pt implements CommandExecutor {
 
     boolean sure = false;
+    YamlConfiguration cfg = TimeManager.cfg;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -30,23 +34,23 @@ public class pt implements CommandExecutor {
                         if (args[0].equalsIgnoreCase("help")) {
 
                             p.sendMessage(" ");
-                            p.sendMessage("§c##################§8Help for PlayTimes§c##################");
-                            p.sendMessage("§8• §7/playtime §c≫ §8Zeigt deine Spielzeit an§7.");
-                            p.sendMessage("§8• §7/playtime §8<§7Spieler§8> §c≫ §8Zeigt die Spielzeit eines Spielers an§7.");
-                            p.sendMessage("§8• §7/playtime debug §c≫ §8Aktiviert/Deaktiviert den Test-Modus des Plugins§7.");
+                            p.sendMessage("§7##################§8Help for PlayTimes§7##################");
+                            p.sendMessage("§8• §7/playtime §f≫ §8Zeigt deine Spielzeit an§7.");
+                            p.sendMessage("§8• §7/playtime §8<§7Spieler§8> §f≫ §8Zeigt die Spielzeit eines Spielers an§7.");
+                            p.sendMessage("§8• §7/playtime debug §f≫ §8Aktiviert/Deaktiviert den Test-Modus des Plugins§7.");
                             p.sendMessage("§8#####################§7DEBUG MODE§8#####################");
                             p.sendMessage("  §8↳ §7/playtime set §8<§7Spieler§8> <§7Stunden§8>§7.");
                             p.sendMessage("  §8↳ §7/playtime reset §8<§7Spieler§8>§7.");
-                            p.sendMessage("  §8↳ §7/playtime reset§7 §c≫ §4ENTFERNT ALLE DATEN§7.");
-                            p.sendMessage("§c##################§8Help for PlayTimes§c##################");
+                            p.sendMessage("  §8↳ §7/playtime reset§7 §f≫ §4ENTFERNT ALLE DATEN§7.");
+                            p.sendMessage("§7##################§8Help for PlayTimes§7##################");
                             p.sendMessage(" ");
 
                         } else if (args[0].equalsIgnoreCase("debug")) {
                             if (!Main.plugin.debug) {
-                                p.sendMessage(Main.plugin.prefix + "§cDEBUG MODE §7wurde §2aktiviert§7.");
+                                p.sendMessage(Main.plugin.prefix + "§fDEBUG MODE §7wurde §2aktiviert§7.");
                                 Main.plugin.debug = true;
                             } else {
-                                p.sendMessage(Main.plugin.prefix + "§cDEBUG MODE §7wurde §cdeaktiviert§7.");
+                                p.sendMessage(Main.plugin.prefix + "§fDEBUG MODE §7wurde §cdeaktiviert§7.");
                                 Main.plugin.debug = false;
                             }
 
@@ -54,22 +58,28 @@ public class pt implements CommandExecutor {
                         } else if (args[0].equalsIgnoreCase("reset")) {
                             if (Main.plugin.debug) {
                                 if(sure) {
-                                    for (String key : Main.plugin.getConfig().getKeys(true)) {
-                                        Main.plugin.getConfig().set(key, null);
+                                    for (String key : cfg.getKeys(true)) {
+                                        cfg.set(key, null);
                                     }
-                                    Main.plugin.saveConfig();
+
+                                    try {
+                                        cfg.save(Main.plugin.filePT);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+
                                     for (Player players : Bukkit.getOnlinePlayers()) {
                                         ScoreBoard.resetSB(players);
                                     }
                                     TimeManager.restartTimer();
-                                    p.sendMessage(Main.plugin.prefix + "§cDu hast alle Daten zurückgesetzt§7.");
+                                    p.sendMessage(Main.plugin.prefix + "§fDu hast alle Daten zurückgesetzt§7.");
                                     sure = false;
                                 } else {
                                     p.sendMessage(Main.plugin.prefix + "§4Bist du sicher, dass du alle Daten löschen willst? Dann gib den Befehl erneut ein!");
                                     sure = true;
                                 }
                             } else {
-                                p.sendMessage(Main.plugin.prefix + "§cDu musst zuerst den §4DEBUG MODE §caktivieren!");
+                                p.sendMessage(Main.plugin.prefix + "§fDu musst zuerst den §4DEBUG MODE §faktivieren!");
                             }
 
                         } else {
@@ -77,7 +87,7 @@ public class pt implements CommandExecutor {
                             if (target != null) {
                                 sendPlayTime(p, target);
                             } else {
-                                p.sendMessage(Main.plugin.prefix + "§cDieser Spieler ist nicht online!");
+                                p.sendMessage(Main.plugin.prefix + "§fDieser Spieler ist nicht online!");
                             }
                         }
                     } else if (args.length == 2) {
@@ -85,20 +95,27 @@ public class pt implements CommandExecutor {
                             if (args[0].equalsIgnoreCase("reset")) {
                                 Player target = Bukkit.getPlayer(args[1]);
                                 if (target != null) {
-                                    Main.plugin.getConfig().set(target.getUniqueId() + ".hours", null);
-                                    Main.plugin.getConfig().set(target.getUniqueId() + ".minutes", null);
-                                    Main.plugin.getConfig().set(target.getUniqueId() + ".days", null);
-                                    Main.plugin.saveConfig();
+                                    cfg.set(target.getUniqueId() + ".hours", null);
+                                    cfg.set(target.getUniqueId() + ".minutes", null);
+                                    cfg.set(target.getUniqueId() + ".days", null);
+
+                                    try {
+                                        cfg.save(Main.plugin.filePT);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+
                                     ScoreBoard.update(target);
-                                    p.sendMessage(Main.plugin.prefix + "§7Die Spielzeit von §c" + target.getName() + "§7 wurde §czurückgesetzt§7.");
+                                    p.sendMessage(Main.plugin.prefix + "§7Die Spielzeit von §f" + target.getName()
+                                            + "§7 wurde §fzurückgesetzt§7.");
                                 } else {
-                                    p.sendMessage(Main.plugin.prefix + "§cDieser Spieler ist nicht online!");
+                                    p.sendMessage(Main.plugin.prefix + "§fDieser Spieler ist nicht online!");
                                 }
                             } else {
-                                p.sendMessage(Main.plugin.prefix + "§cDieser Befehl existiert nicht!");
+                                p.sendMessage(Main.plugin.prefix + "§fDieser Befehl existiert nicht!");
                             }
                         } else {
-                            p.sendMessage(Main.plugin.prefix + "§cDu musst zuerst den DEBUG MODE aktivieren!");
+                            p.sendMessage(Main.plugin.prefix + "§fDu musst zuerst den DEBUG MODE aktivieren!");
                         }
                     } else if (args.length == 3) {
                         if (Main.plugin.debug) {
@@ -116,18 +133,24 @@ public class pt implements CommandExecutor {
                                 if (geht) {
                                     int hours = Integer.parseInt(args[2]);
                                     assert target != null;
-                                    Main.plugin.getConfig().set(target.getUniqueId() + ".minutes", null);
+                                    cfg.set(target.getUniqueId() + ".minutes", null);
                                     TimeManager.updateTimer(hours, target, p);
-                                    Main.plugin.saveConfig();
+
+                                    try {
+                                        cfg.save(Main.plugin.filePT);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+
                                 }
                             } else {
-                                p.sendMessage(Main.plugin.prefix + "§cDieser Befehl existiert nicht!");
+                                p.sendMessage(Main.plugin.prefix + "§fDieser Befehl existiert nicht!");
                             }
                         } else {
-                            p.sendMessage(Main.plugin.prefix + "§cDu musst zuerst den DEBUG MODE aktivieren!");
+                            p.sendMessage(Main.plugin.prefix + "§fDu musst zuerst den DEBUG MODE aktivieren!");
                         }
                     } else {
-                        p.sendMessage(Main.plugin.prefix + "§cDieser Befehl existiert nicht!");
+                        p.sendMessage(Main.plugin.prefix + "§fDieser Befehl existiert nicht!");
                     }
 
                 } else {
@@ -137,25 +160,25 @@ public class pt implements CommandExecutor {
                     } else if (args.length == 1) {
                         if(args[0].equalsIgnoreCase("help")) {
                             p.sendMessage(" ");
-                            p.sendMessage("§c##################§8Help for PlayTimes§c##################");
-                            p.sendMessage("§8• §7/playtime §c≫ §8Zeigt deine Spielzeit an§7.");
-                            p.sendMessage("§8• §7/playtime §8<§7Spieler§8> §c≫ §8Zeigt die Spielzeit eines Spielers an§7.");
-                            p.sendMessage("§c##################§8Help for PlayTimes§c##################");
+                            p.sendMessage("§7##################§8Help for PlayTimes§7##################");
+                            p.sendMessage("§8• §7/playtime §f≫ §8Zeigt deine Spielzeit an§7.");
+                            p.sendMessage("§8• §7/playtime §8<§7Spieler§8> §f≫ §8Zeigt die Spielzeit eines Spielers an§7.");
+                            p.sendMessage("§7##################§8Help for PlayTimes§7##################");
                             p.sendMessage(" ");
                         } else {
                             Player target = Bukkit.getPlayer(args[0]);
                             if (target != null) {
                                 sendPlayTime(p, target);
                             } else {
-                                p.sendMessage(Main.plugin.prefix + "§cDieser Spieler ist nicht online!");
+                                p.sendMessage(Main.plugin.prefix + "§fDieser Spieler ist nicht online!");
                             }
                         }
                     } else {
-                        p.sendMessage(Main.plugin.prefix + "§cSyntax. Benutze /playtime help.");
+                        p.sendMessage(Main.plugin.prefix + "§fSyntax. Benutze /playtime help.");
                     }
                 }
             } else {
-                sender.sendMessage(Main.plugin.prefix + "§cDieser Befehl kann nur von Spielern ausgeführt werden.");
+                sender.sendMessage(Main.plugin.prefix + "§fDieser Befehl kann nur von Spielern ausgeführt werden.");
             }
         }
         return false;
@@ -163,46 +186,50 @@ public class pt implements CommandExecutor {
 
     private void sendPlayTime(Player p, Player target) {
 
-        if (Main.plugin.getConfig().get(target.getUniqueId() + ".minutes") != null
-                || Main.plugin.getConfig().get(target.getUniqueId() + ".hours") != null) {
+        if (cfg.get(target.getUniqueId() + ".minutes") != null
+                || cfg.get(target.getUniqueId() + ".hours") != null) {
 
             int hours = 0;
             int minutes = 0;
 
-            if (Main.plugin.getConfig().get(target.getUniqueId() + ".hours") != null) {
-                hours = (int) Main.plugin.getConfig().get(target.getUniqueId() + ".hours");
+            if (cfg.get(target.getUniqueId() + ".hours") != null) {
+                hours = cfg.getInt(target.getUniqueId() + ".hours");
+                p.sendMessage(hours + "");
+                p.sendMessage("GGD: " + cfg.getInt(target.getUniqueId() + ".hours"));
             }
 
-            if(Main.plugin.getConfig().get(target.getUniqueId() + ".minutes") != null) {
-                minutes = (int) Main.plugin.getConfig().get(target.getUniqueId() + ".minutes");
+            if(cfg.get(target.getUniqueId() + ".minutes") != null) {
+                minutes = cfg.getInt(target.getUniqueId() + ".minutes");
+                p.sendMessage(minutes + "");
+                p.sendMessage("GGD2: " + cfg.getInt(target.getUniqueId() + ".minutes"));
             }
 
             int nhours = hours;
             int days = 0;
 
             if (hours >= 24) {
-                days = (int) (hours / 24);
+                days = (hours / 24);
                 nhours = hours - (days * 24);
             }
 
 
-            String oneone = Main.plugin.prefix + "§7Die Spielzeit von §c" + target.getName()
-                    + " §7beträgt §ceine Stunde §7und §ceine Minute§7.";
-            String onemore = Main.plugin.prefix + "§7Die Spielzeit von §c" + target.getName()
-                    + " §7beträgt §ceine Stunde §7und §c" + minutes + " Minuten§7.";
-            String moreone = Main.plugin.prefix + "§7Die Spielzeit von §c" + target.getName()
-                    + " §7beträgt §c" + hours + " Stunden §7und §ceine Minute§7.";
-            String moremore = Main.plugin.prefix + "§7Die Spielzeit von §c" + target.getName()
-                    + " §7beträgt §c" + hours + " Stunden §7und §c" + minutes + " Minuten§7.";
+            String oneone = Main.plugin.prefix + "§7Die Spielzeit von §f" + target.getName()
+                    + " §7beträgt §feine Stunde §7und §feine Minute§7.";
+            String onemore = Main.plugin.prefix + "§7Die Spielzeit von §f" + target.getName()
+                    + " §7beträgt §feine Stunde §7und §f" + minutes + " Minuten§7.";
+            String moreone = Main.plugin.prefix + "§7Die Spielzeit von §f" + target.getName()
+                    + " §7beträgt §f" + hours + " Stunden §7und §feine Minute§7.";
+            String moremore = Main.plugin.prefix + "§7Die Spielzeit von §f" + target.getName()
+                    + " §7beträgt §f" + hours + " Stunden §7und §f" + minutes + " Minuten§7.";
 
-            String dayone = Main.plugin.prefix + "§7Die Spielzeit von §c" + target.getName()
-                    + " §7beträgt §ceinen Tag §7und §ceine Stunde§7.";
-            String daysone = Main.plugin.prefix + "§7Die Spielzeit von §c" + target.getName()
-                    + " §7beträgt §c" + days + " Tage §7und §ceine Stunde§7.";
-            String daymore = Main.plugin.prefix + "§7Die Spielzeit von §c" + target.getName()
-                    + " §7beträgt §ceinen Tag §7und §c" + nhours + " Stunden§7.";
-            String daysmore = Main.plugin.prefix + "§7Die Spielzeit von §c" + target.getName()
-                    + " §7beträgt §c" + days + " Tage §7und §c" + nhours + " Stunden§7.";
+            String dayone = Main.plugin.prefix + "§7Die Spielzeit von §f" + target.getName()
+                    + " §7beträgt §feinen Tag §7und §feine Stunde§7.";
+            String daysone = Main.plugin.prefix + "§7Die Spielzeit von §f" + target.getName()
+                    + " §7beträgt §f" + days + " Tage §7und §feine Stunde§7.";
+            String daymore = Main.plugin.prefix + "§7Die Spielzeit von §f" + target.getName()
+                    + " §7beträgt §feinen Tag §7und §f" + nhours + " Stunden§7.";
+            String daysmore = Main.plugin.prefix + "§7Die Spielzeit von §f" + target.getName()
+                    + " §7beträgt §f" + days + " Tage §7und §f" + nhours + " Stunden§7.";
 
             if (days == 0) {
                 if (hours == 1 && minutes == 1) {
@@ -225,9 +252,10 @@ public class pt implements CommandExecutor {
                     p.sendMessage(daysmore);
                 }
             }
+            p.sendMessage("HAA");
 
         } else {
-            p.sendMessage(Main.plugin.prefix + "§cFür diesen Spieler gibt es keine Aufzeichnungen.");
+            p.sendMessage(Main.plugin.prefix + "§fFür diesen Spieler gibt es keine Aufzeichnungen.");
         }
 
     }

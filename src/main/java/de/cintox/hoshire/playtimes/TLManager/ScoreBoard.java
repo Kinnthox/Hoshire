@@ -1,7 +1,9 @@
 package de.cintox.hoshire.playtimes.TLManager;
 
 import de.cintox.hoshire.Main;
+import de.cintox.hoshire.playtimes.TimeManager.TimeManager;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,20 +12,27 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
+import java.io.IOException;
+import java.util.Objects;
+
+
 public class ScoreBoard implements Listener {
 
-    static Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
+    static Scoreboard board = Objects.requireNonNull(Bukkit.getScoreboardManager()).getMainScoreboard();
+    static YamlConfiguration cfg = TimeManager.cfg;
     static Team team = null;
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         e.setJoinMessage("§e" + p.getName() + "§e joined the game");
+
         if (board.getTeam(p.getName()) == null) {
             team = board.registerNewTeam(p.getName());
         } else {
             team = board.getTeam(p.getName());
         }
+        assert team != null;
         team.addEntry(p.getName());
 
         update(p);
@@ -38,16 +47,21 @@ public class ScoreBoard implements Listener {
         }
         e.setQuitMessage("§e" + p.getName() + "§e left the game");
         if(p.isBanned()) {
-            Main.plugin.getConfig().set(String.valueOf(p.getUniqueId()), null);
-            Main.plugin.saveConfig();
+            cfg.set(String.valueOf(p.getUniqueId()), null);
+            try {
+                cfg.save(Main.plugin.filePT);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
     public static void update(Player p) {
 
-        if (Main.plugin.getConfig().get(p.getUniqueId() + ".hours") != null) {
-            int hours = (int) Main.plugin.getConfig().get(p.getUniqueId() + ".hours");
+        if (cfg.get(p.getUniqueId() + ".hours") != null) {
+            int hours = cfg.getInt(p.getUniqueId() + ".hours");
             team = board.getTeam(p.getName());
+            assert team != null;
             if (hours >= 20 && hours < 30) {
                 team.setSuffix(" ⁕");
             } else if (hours >= 30 && hours < 40) {

@@ -6,18 +6,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerExpChangeEvent;
-
 import java.util.HashMap;
 
 public class XP implements Listener {
 
-    HashMap<Player, levelManager> oldxps = Main.plugin.oldxps;
+    HashMap<Player, levelManager> xps = Main.plugin.xps;
 
     @EventHandler
     public void onEXP(PlayerExpChangeEvent e) {
 
-        if (oldxps.containsKey(e.getPlayer())) {
-            oldxps.get(e.getPlayer()).addLater(e.getAmount());
+        if (xps.containsKey(e.getPlayer())) {
+            xps.get(e.getPlayer()).addLater(e.getAmount());
             e.setAmount(0);
         }
     }
