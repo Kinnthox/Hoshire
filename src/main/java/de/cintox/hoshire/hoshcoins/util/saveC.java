@@ -1,6 +1,7 @@
 package de.cintox.hoshire.hoshcoins.util;
 
 import de.cintox.hoshire.Main;
+import de.cintox.hoshire.leveling.util.levelManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -45,6 +46,7 @@ public class saveC {
 
         fillCfg(pUUID);
         cfg.set(pUUID + ".coins", pCoins);
+        levelManager.setExp(Bukkit.getPlayer(pUUID), pCoins);
 
         if (!(Objects.requireNonNull(Bukkit.getPlayer(pUUID)).getName().equals(cfg.get(pUUID + ".name")))) {
             cfg.set(pUUID + ".name", Objects.requireNonNull(Bukkit.getPlayer(pUUID)).getName());
@@ -65,6 +67,7 @@ public class saveC {
 
         int oldcoins = getCoins(pUUID);
         cfg.set(pUUID + ".coins", oldcoins + pCoins);
+        levelManager.addExp(Bukkit.getPlayer(pUUID), pCoins);
 
         if (!(Objects.requireNonNull(Bukkit.getPlayer(pUUID)).getName().equals(cfg.get(pUUID + ".name")))) {
             cfg.set(pUUID + ".name", Objects.requireNonNull(Bukkit.getPlayer(pUUID)).getName());
@@ -90,7 +93,7 @@ public class saveC {
             return false;
         }
         cfg.set(pUUID + ".coins", oldcoins - pCoins);
-
+        levelManager.setExp(Bukkit.getPlayer(pUUID), getCoins(pUUID));
         if (!(Objects.requireNonNull(Bukkit.getPlayer(pUUID)).getName().equals(cfg.get(pUUID + ".name")))) {
             cfg.set(pUUID + ".name", Objects.requireNonNull(Bukkit.getPlayer(pUUID)).getName());
         }

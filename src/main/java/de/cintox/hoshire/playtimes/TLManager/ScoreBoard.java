@@ -25,7 +25,7 @@ public class ScoreBoard implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
-        e.setJoinMessage("§e" + p.getName() + "§e joined the game");
+        e.setJoinMessage("§f" + p.getName() + "§f joined the game");
 
         if (board.getTeam(p.getName()) == null) {
             team = board.registerNewTeam(p.getName());
@@ -78,7 +78,7 @@ public class ScoreBoard implements Listener {
 
     public static void resetSB(Player p) {
         if (board.getTeam(p.getName()) != null) {
-            board.getTeam(p.getName()).setSuffix("");
+            Objects.requireNonNull(board.getTeam(p.getName())).setSuffix("");
         }
     }
 }

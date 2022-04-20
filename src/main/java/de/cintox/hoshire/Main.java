@@ -17,11 +17,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public final class Main extends JavaPlugin {
 
     public HashMap<Player, levelManager> xps = new HashMap<>();
+    public ArrayList<Player> blocked = new ArrayList<>();
     public static Main plugin;
     public boolean debug = false;
 
@@ -32,7 +34,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         getServer().getConsoleSender().sendMessage(strings.prefix + ChatColor.GRAY + "Das Plugin wurde " +
-                ChatColor.GREEN + "geladen" + ChatColor.GRAY + ".");
+                ChatColor.WHITE + "geladen" + ChatColor.GRAY + ".");
         plugin = this;
         TimeManager.startTimer();
         checkFileCreation();

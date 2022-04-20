@@ -3,23 +3,16 @@ package de.cintox.hoshire.leveling.util;
 import de.cintox.hoshire.Main;
 import de.cintox.hoshire.util.strings;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import java.util.HashMap;
 
 public class xpbar {
 
-    public HashMap<Player, levelManager> xps = Main.plugin.xps;
-
     public void showbar(Player p) {
 
-        xps.put(p, new levelManager(p));
-
-        xps.get(p).setOldXps(p.getExp());
-        xps.get(p).setOldLevel(p.getLevel());
-
-        float xp = (float) xps.get(p).getExp();
-        int level = xps.get(p).getLevel();
+        Main.plugin.blocked.add(p);
+        float xp = levelManager.getExp(p);
+        int level = levelManager.getLevel(p);
+        levelManager.setOld(p, p.getLevel(), p.getExp());
 
         p.setLevel(level);
         p.setExp(xp);
@@ -27,25 +20,22 @@ public class xpbar {
 
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, () -> {
 
-            if(xps.get(p) != null) {
-                ResetBar(p);
-            } else {
-                Main.plugin.getServer().getConsoleSender().sendMessage(strings.LevelQuit);
-            }
-        }, 10*20);
+            ResetBar(p);
+            Main.plugin.blocked.remove(p);
+        }, 10 * 20);
     }
 
     public void ResetBar(Player p) {
-        float exp = (float) xps.get(p).getOldXps();
+        float exp = levelManager.getOldXP(p);
         while ((exp) >= 1) {
-            xps.get(p).setOldLevel(xps.get(p).getOldLevel() + 1);
+            levelManager.setOld(p, levelManager.getOldLevel(p) + 1, levelManager.getOldXP(p));
             exp -= 1;
         }
-        p.setLevel(xps.get(p).getOldLevel());
+        p.setLevel(levelManager.getOldLevel(p));
         p.setExp(exp);
-        p.giveExp(xps.get(p).getLater());
+        p.giveExp(levelManager.getLater(p));
+        levelManager.removeOld(p);
         p.sendMessage(strings.XPReset);
-        xps.remove(p);
     }
 
 }

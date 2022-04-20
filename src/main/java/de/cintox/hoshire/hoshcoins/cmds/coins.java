@@ -1,6 +1,5 @@
 package de.cintox.hoshire.hoshcoins.cmds;
 
-import de.cintox.hoshire.Main;
 import de.cintox.hoshire.hoshcoins.util.saveC;
 import de.cintox.hoshire.util.strings;
 import org.bukkit.Bukkit;
@@ -29,21 +28,15 @@ public class coins implements CommandExecutor {
                         else p.sendMessage(strings.help);
 
                     } else {
-                        if (p.isOp()) {
-                            Player target = Bukkit.getPlayer(args[0]);
-                            if (target != null) {
-                                String text = strings.curHCOther.replace("%NAME%", args[0]);
-                                String text1 = text.replace("%COINS%","" + saveC.getCoins(target.getUniqueId()));
-                                p.sendMessage(text1);
-                            } else {
-                                p.sendMessage(strings.Error);
-                            }
+                        Player target = Bukkit.getPlayer(args[0]);
+                        if (target != null) {
+                            String text = strings.curHCOther.replace("%NAME%", args[0]);
+                            String text1 = text.replace("%COINS%", "" + saveC.getCoins(target.getUniqueId()));
+                            p.sendMessage(text1);
                         } else {
-                            p.sendMessage(strings.syntaxError);
+                            p.sendMessage(strings.Error);
                         }
                     }
-
-                    // /coins get <Player>
                 }
                 // /coins set Kinnthox 100
                 // /coins add Kinnthox 100
